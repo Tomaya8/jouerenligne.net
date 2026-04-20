@@ -9,6 +9,7 @@ export interface Casino {
   features: string[];
   payments: string[];
   license: string;
+  affiliateUrl: string;
 }
 
 function Stars({ rating }: { rating: number }) {
@@ -46,7 +47,7 @@ export default function CasinoCard({ casino }: { casino: Casino }) {
       </div>
       <div className="flex flex-col gap-2 justify-center shrink-0">
         <Link href={`/casino-en-ligne/${casino.slug}/`} className="px-6 py-2.5 bg-accent text-white font-semibold rounded-lg hover:bg-accent/90 transition-colors text-center text-sm">Lire l&apos;avis</Link>
-        <a href="#" className="px-6 py-2.5 bg-gold text-primary font-semibold rounded-lg hover:bg-gold-light transition-colors text-center text-sm" rel="nofollow noopener">Visiter le site</a>
+        <a href={casino.affiliateUrl} target="_blank" className="px-6 py-2.5 bg-gold text-primary font-semibold rounded-lg hover:bg-gold-light transition-colors text-center text-sm" rel="nofollow sponsored noopener">Visiter le site</a>
       </div>
     </div>
   );

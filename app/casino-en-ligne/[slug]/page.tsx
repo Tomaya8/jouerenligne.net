@@ -112,9 +112,10 @@ export default async function CasinoReviewPage({ params }: Props) {
             </div>
             <div className="flex flex-col gap-2 shrink-0">
               <a
-                href="#"
+                href={review.affiliateUrl}
+                target="_blank"
                 className="px-8 py-3 bg-gold text-primary font-semibold rounded-lg hover:bg-gold-light transition-colors text-center"
-                rel="nofollow noopener"
+                rel="nofollow sponsored noopener"
               >
                 Visiter {review.name}
               </a>
@@ -250,9 +251,10 @@ export default async function CasinoReviewPage({ params }: Props) {
           </div>
           <div className="text-center mt-6">
             <a
-              href="#"
+              href={review.affiliateUrl}
+              target="_blank"
               className="inline-block px-8 py-3 bg-gold text-primary font-semibold rounded-lg hover:bg-gold-light transition-colors"
-              rel="nofollow noopener"
+              rel="nofollow sponsored noopener"
             >
               Visiter {review.name}
             </a>
