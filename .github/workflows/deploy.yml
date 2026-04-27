@@ -3,6 +3,7 @@ name: Deploy to Hestia
 on:
   push:
     branches: [main]
+  workflow_dispatch:
 
 jobs:
   deploy:
@@ -18,12 +19,25 @@ jobs:
       - run: npm ci
       - run: npm run build
 
-      - name: Upload via SFTP
-        uses: wlixcc/SFTP-Deploy-Action@v1.2.4
-        with:
-          server: ${{ secrets.SFTP_HOST }}
-          username: ${{ secrets.SFTP_USER }}
-          ssh_private_key: ${{ secrets.SFTP_KEY }}
-          local_path: ./out/*
-          remote_path: /home/jouerenligne_net/web/jouerenligne.net/public_html/
-          sftpArgs: "-o ConnectTimeout=10"
+      - name: Deploy via SFTP (lftp)
+        env:
+          SSH_KEY: ${{ secrets.SFTP_KEY }}
+          SFTP_USER: ${{ secrets.SFTP_USER }}
+          SFTP_HOST: ${{ secrets.SFTP_HOST }}
+        run: |
+          mkdir -p ~/.ssh
+          printf '%s\n' "$SSH_KEY" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          ssh-keyscan -H "$SFTP_HOST" >> ~/.ssh/known_hosts 2>/dev/null
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq lftp
+          cat > /tmp/lftp.cmd <<EOF
+          set sftp:connect-program "ssh -a -x -i $HOME/.ssh/deploy_key -o StrictHostKeyChecking=no"
+          set net:timeout 30
+          set net:max-retries 3
+          set sftp:auto-confirm yes
+          open -u "$SFTP_USER," sftp://$SFTP_HOST
+          mirror -R --delete --parallel=4 ./out/ /home/jouerenligne_net/web/jouerenligne.net/public_html/
+          bye
+          EOF
+          lftp -f /tmp/lftp.cmd
